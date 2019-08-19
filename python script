@@ -1,0 +1,30 @@
+import numpy as np
+import pandas as pd
+from fuzzywuzzy import fuzz
+
+df=pd.read_csv('Names.csv')
+
+input_name=input('Enter a name to search: ').upper()
+
+possible_nicknames=df[df['Name1']==input_name]
+if len(possible_nicknames)>0:
+    print('Common possible English name variations or nicknames are: ')
+    Deterministic= list(possible_nicknames['Name2'])
+    print(Deterministic)
+else:
+    print('No direct matches found!')
+
+
+jw= []
+for z in df['Name1']:
+    jw.append(fuzz.partial_token_sort_ratio(z,input_name))
+    
+fuz_match=pd.DataFrame({'Names':df['Name1'],'Score':jw}, columns=['Names','Score'])
+Fuzzy_match_list=fuz_match[fuz_match['Score']>85]
+Probabilistic= list(Fuzzy_match_list['Names'].unique())
+
+if len(Probabilistic)>0:
+    print('\nAdditionally, based on fuzzy matching, the close matches are: ')
+    print(Fuzzy_match_list['Names'].unique())
+else:
+    print('No probabilistic matches found!')
